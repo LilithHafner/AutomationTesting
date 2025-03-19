@@ -1,4 +1,4 @@
-name: Assign Reviewer to new PR
+name: Assign Reviewer to new PR 
 on:
   pull_request:
     types: [opened]
