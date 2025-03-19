@@ -37,8 +37,8 @@ jobs:
 
               if (isPrReview || isCiReview) {
                 console.log(`${pr} has label`);
+                const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
                 // Fetch already requested reviewers
-                const { data: requestedReviewers } = await github.rest.pulls.listRequestedReviewers({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
