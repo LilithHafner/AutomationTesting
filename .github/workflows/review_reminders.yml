@@ -1,0 +1,59 @@
+name: PR and CI Review Reminders
+on:
+  schedule:
+    - cron: '*/10 * * * *' # Reminder every 10 minutes TODO: scale back for production.
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  remind-reviewers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process Each PR
+        id: fetch-prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Fetch PRs
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+            });
+
+            // Process each PR
+            for (const pr of prs) {
+              const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+              });
+
+              // Check if PR is in "pr review" or "ci review" state
+              const isPrReview = labels.some(label => label.name === 'pr review');
+              const isCiReview = labels.some(label => label.name === 'ci review');
+
+              if (isPrReview || isCiReview) {
+                // Fetch already requested reviewers
+                const { data: requestedReviewers } = await github.rest.pulls.listRequestedReviewers({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                });
+
+                if (requestedReviewers.length > 0) {
+                  // Ping the assignees
+                  const reviewerMentions = requestedReviewers.map(reviewer => `@${reviewer.login}`).join(' ')
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    body: `@${reviewerMentions}, please review this PR!`,
+                  });
+                } else {
+                  console.log(`No available reviewers found for PR #${pr.number}.`);
+                  // TODO: assign a new reviewer who has not already removed their assignment, 
+                  // first from suggested reviewers, then at random from committers.
+                }
+              }
+            }
