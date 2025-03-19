@@ -50,7 +50,7 @@ jobs:
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: pr.number,
-                    body: `@${reviewerMentions}, please review this PR <3`,
+                    body: `${reviewerMentions}, please review this PR <3`,
                   });
                 } else {
                   console.log(`No requested reviewers found for PR #${pr.number}.`);
