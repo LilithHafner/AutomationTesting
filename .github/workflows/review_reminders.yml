@@ -4,6 +4,11 @@ on:
     - cron: '*/10 * * * *' # Reminder every 10 minutes TODO: scale back for production.
   workflow_dispatch:
 
+permissions:
+  issues: write
+  discussions: write
+  pull-requests: write
+
 jobs:
   remind-reviewers:
     runs-on: ubuntu-latest
