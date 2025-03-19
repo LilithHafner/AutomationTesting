@@ -50,10 +50,10 @@ jobs:
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: pr.number,
-                    body: `@${reviewerMentions}, please review this PR!`,
+                    body: `@${reviewerMentions}, please review this PR <3`,
                   });
                 } else {
-                  console.log(`No available reviewers found for PR #${pr.number}.`);
+                  console.log(`No requested reviewers found for PR #${pr.number}.`);
                   // TODO: assign a new reviewer who has not already removed their assignment, 
                   // first from suggested reviewers, then at random from committers.
                 }
