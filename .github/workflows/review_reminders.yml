@@ -16,18 +16,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            console.log(`started`);
             // Fetch PRs
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
             });
-            console.log(`fetched`);
 
             // Process each PR
             for (const pr of prs) {
-              console.log(`checking ${pr}`);
               const { data: labels } = await github.rest.issues.listLabelsOnIssue({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -39,7 +36,6 @@ jobs:
               const isCiReview = labels.some(label => label.name === 'ci review');
 
               if (isPrReview || isCiReview) {
-                console.log(`${pr} has label`);
                 const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
                 // Fetch already requested reviewers
                   owner: context.repo.owner,
@@ -48,7 +44,6 @@ jobs:
                 });
 
                 if (requestedReviewers.length > 0) {
-                  console.log(`pinging assignees`);
                   // Ping the assignees
                   const reviewerMentions = requestedReviewers.map(reviewer => `@${reviewer.login}`).join(' ')
                   await github.rest.issues.createComment({
