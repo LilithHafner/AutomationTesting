@@ -2,8 +2,7 @@ name: PR and CI Review Reminders
 on:
   schedule:
     - cron: '*/10 * * * *' # Reminder every 10 minutes TODO: scale back for production.
-  pull_request_review:
-    types: [submitted]
+  workflow_dispatch:
 
 jobs:
   remind-reviewers:
