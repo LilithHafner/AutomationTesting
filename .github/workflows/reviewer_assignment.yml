@@ -21,20 +21,28 @@ jobs:
             });
             
             if (requestedReviewers.length === 0) {
+              // Find suitable reviewers
               /* const { data: members } = await github.rest.teams.listMembersInOrg({ // TODO: ensure that access token as adequate perms for this
                 org: "JuliaLang",
                 team_slug: "committers",
                 per_page: 100,
               });
-              const member_logins = members.map(member => member.login); */
-              const member_logins = ["LilithHafner", "LilithHafnerBot"]; // TODO use committers in production
-              
+              member_logins = members.map(member => member.login); */
+              member_logins = ["LilithHafner", "LilithHafnerBot"]; // TODO use committers in production
+
+              // Filter out the PR author
+              const prAuthor = context.payload.pull_request.user.login;
+              member_logins = member_logins.filter(login => login !== prAuthor);
+
+              // Assign random reviewer
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
                 assignees: member_logins[Math.floor(Math.random()*member_logins.length)],
               });
+
+              // Add the "pr review" label
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
