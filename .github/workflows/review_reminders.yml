@@ -4,6 +4,9 @@ on:
     - cron: '*/10 * * * *' # Reminder every 10 minutes TODO: scale back for production.
   workflow_dispatch:
 
+permissions:
+  pull-requests: write
+
 jobs:
   remind-reviewers:
     runs-on: ubuntu-latest
@@ -33,8 +36,8 @@ jobs:
               const isCiReview = labels.some(label => label.name === 'ci review');
 
               if (isPrReview || isCiReview) {
+                const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
                 // Fetch already requested reviewers
-                const { data: requestedReviewers } = await github.rest.pulls.listRequestedReviewers({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
@@ -47,10 +50,10 @@ jobs:
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: pr.number,
-                    body: `@${reviewerMentions}, please review this PR!`,
+                    body: `@${reviewerMentions}, please review this PR <3`,
                   });
                 } else {
-                  console.log(`No available reviewers found for PR #${pr.number}.`);
+                  console.log(`No requested reviewers found for PR #${pr.number}.`);
                   // TODO: assign a new reviewer who has not already removed their assignment, 
                   // first from suggested reviewers, then at random from committers.
                 }
