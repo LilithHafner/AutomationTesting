@@ -17,14 +17,14 @@ jobs:
               pull_number: context.payload.pull_request.number,
             });
             
-            if (requestedReviewers.users.length === 0) {
+            if (requestedReviewers.length === 0) {
               const { data: members } = await github.rest.teams.listMembersInOrg({
                 org: "JuliaLang",
                 team_slug: "committers",
                 per_page: 100,
               });
-              // const member_logins = members.map(member => member.login)
-              const member_logins = ["LilithHafner", "LilithHafnerBot"] # TODO use committers in production
+              // const member_logins = members.map(member => member.login);
+              const member_logins = ["LilithHafner", "LilithHafnerBot"]; // TODO use committers in production
               
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
