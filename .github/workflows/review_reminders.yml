@@ -14,8 +14,6 @@ jobs:
         with:
           script: |
             console.log(`Debug`);
-            error error error
-            console.log(`Debug2`);
             // Fetch PRs
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
