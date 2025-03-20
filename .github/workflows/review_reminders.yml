@@ -37,22 +37,8 @@ jobs:
               const isChangesNeeded = labels.some(label => label.name === 'changes needed');
 
               if (isPrReview || isCiReview) {
-                // Fetch assignees
-                var { data: assignees} = await github.rest.issues.listAssignees({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr.number,
-                });
-
-                // Append requested reviewers if we're waiting for a review
-                if (isPrReview) {
-                  const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    pull_number: pr.number,
-                  });
-                  assignees = assignees.concat(requestedReviewers);
-                };
+                // Fetch assignees and append requested reviewers if we're waiting for a review
+                var assignees = isPrReview ? pr.assignees.concat(pr.requested_reviewers) : pr.assignees
 
                 if (assignees.length > 0) {
                   // Ping the assignees
