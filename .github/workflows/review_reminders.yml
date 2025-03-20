@@ -1,7 +1,7 @@
-name: PR and CI Review Reminders
+name: Reminders
 on:
   schedule:
-    - cron: '*/10 * * * *' # Reminder every 10 minutes TODO: scale back for production.
+    - cron: '*/5 * * * *' # Reminder every 10 minutes TODO: scale back for production.
   workflow_dispatch:
 
 permissions:
@@ -34,28 +34,48 @@ jobs:
               // Check if PR is in "pr review" or "ci review" state
               const isPrReview = labels.some(label => label.name === 'pr review');
               const isCiReview = labels.some(label => label.name === 'ci review');
+              const isChangesNeeded = labels.some(label => label.name === 'changes needed');
 
               if (isPrReview || isCiReview) {
-                const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
-                // Fetch already requested reviewers
+                // Fetch assignees
+                var { data: assignees} = await github.rest.issues.listAssignees({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  pull_number: pr.number,
+                  issue_number: pr.number,
                 });
 
-                if (requestedReviewers.length > 0) {
+                // Append requested reviewers if we're waiting for a review
+                if (isPrReview) {
+                  const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                  });
+                  assignees = assignees.concat(requestedReviewers);
+                }
+
+                if (assignees.length > 0) {
                   // Ping the assignees
-                  const reviewerMentions = requestedReviewers.map(reviewer => `@${reviewer.login}`).join(' ')
+                  const assigneeMentions = assignees.map(a => `@${a.login}`).join(' ')
+                  const body = isPrReview ? `${assigneeMentions}, please review this PR <3` : `${assigneeMentions}, please review the CI failure <3`;
                   await github.rest.issues.createComment({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: pr.number,
-                    body: `${reviewerMentions}, please review this PR <3`,
+                    body
                   });
                 } else {
                   console.log(`No requested reviewers found for PR #${pr.number}.`);
                   // TODO: assign a new reviewer who has not already removed their assignment, 
                   // first from suggested reviewers, then at random from committers.
                 }
+              } else if (isChangesNeeded) {
+                const body = isPrReview ? `${pr.user.login}, please make the requested changes to this PR <3`;
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body
+                });
               }
             }
