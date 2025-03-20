@@ -52,7 +52,7 @@ jobs:
                     pull_number: pr.number,
                   });
                   assignees = assignees.concat(requestedReviewers);
-                }
+                };
 
                 if (assignees.length > 0) {
                   // Ping the assignees
@@ -68,9 +68,9 @@ jobs:
                   console.log(`No requested reviewers found for PR #${pr.number}.`);
                   // TODO: assign a new reviewer who has not already removed their assignment, 
                   // first from suggested reviewers, then at random from committers.
-                }
+                };
               } else if (isChangesNeeded) {
-                const body = isPrReview ? `${pr.user.login}, please make the requested changes to this PR <3`;
+                const body = `${pr.user.login}, please make the requested changes to this PR <3`;
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
