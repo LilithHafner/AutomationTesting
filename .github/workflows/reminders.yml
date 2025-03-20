@@ -17,7 +17,7 @@ jobs:
         with:
           script: |
             // Fetch PRs
-            const { data: prs } = await github.rest.pulls.list({ # TODO: handle pagination
+            const { data: prs } = await github.rest.pulls.list({ // TODO: handle pagination
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
