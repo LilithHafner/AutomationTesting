@@ -1,7 +1,7 @@
-name: Assign Reviewer to new PR
+name: Assign Reviewer
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened, ready_for_review]
 
 permissions:
   pull-requests: write
@@ -9,6 +9,7 @@ permissions:
 jobs:
   assign-reviewer:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft != true }}
     steps:
       - name: Assign Reviewer
         uses: actions/github-script@v7
