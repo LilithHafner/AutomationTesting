@@ -15,13 +15,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { data: { users: requestedReviewers } } = await github.rest.pulls.listRequestedReviewers({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-            });
-            
-            if (requestedReviewers.length === 0) {
+            if (context.payload.pull_request.assignees.length === 0) {
               // Find suitable reviewers
               /* const { data: members } = await github.rest.teams.listMembersInOrg({ // TODO: ensure that access token as adequate perms for this
                 org: "JuliaLang",
