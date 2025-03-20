@@ -56,7 +56,7 @@ jobs:
                   // first from suggested reviewers, then at random from committers.
                 };
               } else if (isChangesNeeded) {
-                const body = `${pr.user.login}, please make the requested changes to this PR <3`;
+                const body = `@${pr.user.login}, please make the requested changes to this PR <3`;
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
