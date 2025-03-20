@@ -1,0 +1,20 @@
+name: Flakey test
+on:
+  pull_request:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  flakey-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait 10 seconds and then fail with a 50% chance
+        run: |
+          sleep 10
+          if [ $((RANDOM % 2)) -eq 0 ]; then
+            echo "Failing the test"
+            exit 1
+          else
+            echo "Test passed"
+          fi
