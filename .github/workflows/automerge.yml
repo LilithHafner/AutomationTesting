@@ -18,12 +18,12 @@ jobs:
             const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: context.check_suite.head_sha,
+              commit_sha: context.payload.sha,
             });
 
             // Process each PR
             for (const pr of prs) {
-              if (pr.head.sha == context.check_suite.head_sha && // double check, should be redundant
+              if (pr.head.sha == context.payload.sha && // double check, should be redundant
                   pr.labels.some(l => l.name === "merge me")
               ) {  
                 /* const { data: members } = await github.rest.teams.listMembersInOrg({ // TODO: ensure that access token as adequate perms for this
