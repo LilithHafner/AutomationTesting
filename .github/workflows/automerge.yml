@@ -24,7 +24,7 @@ jobs:
             // Process each PR
             for (const pr of prs) {
               if (pr.head.sha == context.check_suite.head_sha && // double check, should be redundant
-                  pr.labels.any(l => l.name === "merge me")
+                  pr.labels.some(l => l.name === "merge me")
               ) {  
                 /* const { data: members } = await github.rest.teams.listMembersInOrg({ // TODO: ensure that access token as adequate perms for this
                   org: "JuliaLang",
@@ -44,7 +44,7 @@ jobs:
                 var blocked = false;
                 for (const review of reviews) {
                   blocked = blocked || review.state === "CHANGES_REQUESTED";
-                  approved = approved || review.state === "APPROVED && member_logins.contains(review.user.login);
+                  approved = approved || review.state === "APPROVED" && member_logins.inclues(review.user.login);
                 }
                 
                 if (approved && !blocked) {
