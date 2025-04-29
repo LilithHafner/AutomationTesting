@@ -7,7 +7,8 @@ permissions:
 jobs:
   try-automerge:
     runs-on: ubuntu-latest
-    if: ${{ github.event.check_suite.conclusion == "success" }}
+    if: github.event.state == 'success' 
+    # TODO: add some additional check so that generic status write access does not escelate to merge access.
     steps:
       - name: Check for approval and merge me label
         uses: actions/github-script@v7
