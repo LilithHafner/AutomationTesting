@@ -1,7 +1,5 @@
 name: Automerge
-on:
-  check_suite:
-    types: [completed]
+on: status
 
 permissions:
   contents: write
