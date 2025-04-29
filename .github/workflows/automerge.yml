@@ -21,11 +21,14 @@ jobs:
               commit_sha: context.payload.sha,
             });
 
+            console.log("Commit SHA:", context.payload.sha);  // Debug: Print commit SHA
+
             // Process each PR
             for (const pr of prs) {
               if (pr.head.sha == context.payload.sha && // double check, should be redundant
                   pr.labels.some(l => l.name === "merge me")
               ) {  
+                console.log("Considering pr");
                 /* const { data: members } = await github.rest.teams.listMembersInOrg({ // TODO: ensure that access token as adequate perms for this
                   org: "JuliaLang",
                   team_slug: "committers",
@@ -43,11 +46,13 @@ jobs:
                 var approved = false;
                 var blocked = false;
                 for (const review of reviews) {
+                  console.log("Review: ", review.state);
                   blocked = blocked || review.state === "CHANGES_REQUESTED";
                   approved = approved || review.state === "APPROVED" && member_logins.inclues(review.user.login);
                 }
                 
                 if (approved && !blocked) {
+                  console.log("merge!");
                   await github.rest.pulls.merge({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
